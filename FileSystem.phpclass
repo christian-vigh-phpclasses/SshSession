@@ -22,6 +22,12 @@
 
     [Version : 1.0.3]	[Date : 2016/06/26]     [Author : CV]
 	. Changed the fread() method, which was improperly calling fwrite (!).
+
+    [Version : 1.0.4]	[Date : 2016/08/09]     [Author : CV]
+	. The SshFileSystem constructor was throwing a undefined exception in case of error.
+
+    [Version : 1.0.5]	[Date : 2016/10/18]     [Author : CV]
+	. Added the filesize() method
  
  **************************************************************************************************************/
 
@@ -80,8 +86,8 @@ class  SshFileSystem		// extends  Object
 	   {
 		if  ( $status  ===  false )
 		   {
-			$error		=  error_get_last ( ) ;
-			$message	=  preg_replace ( '-ssh2.sftp://Resource id #\d+/-', '/', $error [ 'message' ] ) ;
+			$error		=  get_last_ignored_error ( ) ;
+			$message	=  preg_replace ( '-ssh2.sftp://Resource id #\d+/-', '/', $error [ 'error' ] ) ;
 
 			if  ( $path )
 				$message	.=  "\nPath : $path" ;
@@ -249,6 +255,18 @@ class  SshFileSystem		// extends  Object
 		return ( $data ) ;
 	    }
 	
+	
+	// filesize -
+	//	Returns the file size of the specified remote filename.
+	public function  filesize ( $filename ) 
+	   {
+		$size		=  @filesize ( $this -> SshPath ( $filename ) ) ;
+
+		$this -> __check_error ( $size, $filename ) ;
+
+		return ( $size ) ;
+	    }
+
 	
 	// fopen -
 	//	Opens a file on the remote host.
@@ -540,7 +558,7 @@ class  SshFileSystem		// extends  Object
 	public function  rmdir ( $remote_directory )
 	   {
 		$result		=  @ssh2_sftp_rmdir ( $this -> SftpSession, $this -> __get_path ( $remote_directory ) ) ;
-
+		
 		$this -> __check_error ( $result, $remote_directory ) ;
 		
 		return ( $result ) ;
