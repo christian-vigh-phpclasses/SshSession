@@ -223,7 +223,7 @@ abstract class  SshKeyBasedAuthentication		extends  SshAuthentication
 	public		$PassPhrase ;
 	
 	
-	public function  __construct ( $session, $username, $public_key_file, $private_key_file, $passphrase = null )
+	public function		
 	   {
 		parent::__construct ( $session, $username ) ;
 
