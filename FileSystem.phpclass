@@ -33,6 +33,10 @@
 	. Some special characters in paths (such as UTF8 characters) can cause the ssh2.sftp wrapper to 
 	  generate a memory violation in the PHP executable on Windows systems. The SshPath() method has been
 	  changed to url-encode the supplied path.
+
+    [Version : 1.0.7]	[Date : 2016/12/15]     [Author : CV]
+	. Changed the SshPath() method to use the integer value of the SFTP session resource instead of its 
+	  string representation. This had been broken starting with PHP 5.6.28.
  
  **************************************************************************************************************/
 
@@ -141,9 +145,9 @@ class  SshFileSystem		// extends  Object
 			$path	=  "/$path" ;
 
 		// Encode the whole path, but make sure slashes are not encoded with %2F, which would make any access to this path fail
-		$path	=  str_replace ( '%2F', '/', rawurlencode ( $path ) ) ;
-		
-		$result	=  "ssh2.sftp://{$this -> SftpSession}$path" ;
+		$path		=  str_replace ( '%2F', '/', rawurlencode ( $path ) ) ;
+		$session_id	=  intval ( $this -> SftpSession ) ;
+		$result		=  "ssh2.sftp://$session_id$path" ;
 		
 		return ( $result ) ;
 	    }
@@ -483,9 +487,10 @@ class  SshFileSystem		// extends  Object
 	//	Opens a remote directory.
 	public function  opendir ( $path )
 	   {
-		$status		=  @opendir ( $this -> SshPath ( $path ) ) ;
+		$real_path	=  $this -> SshPath ( $path ) ;
+	   	$status		=  @opendir ( $real_path ) ;
 		
-		$this -> __check_error ( $status, $path ) ;
+		$this -> __check_error ( $status, $real_path ) ;
 		
 		return ( $status ) ;
 	    }
