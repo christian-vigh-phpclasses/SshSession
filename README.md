@@ -54,6 +54,17 @@ The remote systems you will be accessing will need the following :
 - A version of PHP with the *libssh2* library installed and configured as an extension library (either in CLI mode or when running with a web server)
 - If you want to authenticate using public and private keys, the user on your remote server will need to have your public key in the *authorized_keys* file of the *.ssh* directory located in the home directory for this user.
 
+## WARNING FOR USERS OF PHP > 5.6.27 ##
+
+PHP 5.6.28 broke something (or radically changed something) in the way the ssh2.sftp wrapper parses a file specification. This led to errors when using the opendir() function, for example.
+
+This became "less worse" with PHP 7.0, but resource id strings in path specifications remain unrecognized, unlike in versions <= 5.6.27 (the Ssh Session classes has been fixed to handle
+this new case).
+
+PHP 7.1 solved the problem ; however, on Windows platforms, using multiple SFTP sessions within the same script can lead to errors when trying to access existing remote files. 
+More annoying is that an access violation is generated at the end of the script in php_libssh2.dll. This problem, which is linked to the current implementation of the libssh2 extension,
+is currently under investigation.
+
 ## PACKAGE DESCRIPTION ##
 
 This package contains 4 main classes :
