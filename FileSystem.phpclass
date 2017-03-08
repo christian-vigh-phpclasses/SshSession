@@ -95,7 +95,7 @@ class  SshFileSystem		// extends  Object
 	   {
 		if  ( $status  ===  false )
 		   {
-			$error		=  get_last_ignored_error ( ) ;
+			$error		=  error_get_last ( ) ;
 			$message	=  preg_replace ( '-ssh2.sftp://Resource id #\d+/-', '/', $error [ 'error' ] ) ;
 
 			if  ( $path )
